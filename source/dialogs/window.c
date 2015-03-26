@@ -63,6 +63,7 @@ typedef struct
     Atom              state[CLIENTSTATE];
     workarea          monitor;
     int               active;
+    int               urgent;
 } client;
 // TODO
 extern Display *display;
@@ -273,6 +274,8 @@ static client* window_client ( Display *display, Window win )
         XFree ( chint.res_name );
     }
 
+    c->urgent = is_window_urgent ( display, c->window );
+
     monitor_dimensions ( display, c->xattr.screen, c->xattr.x, c->xattr.y, &c->monitor );
     winlist_append ( cache_client, c->window, c );
     return c;
@@ -390,10 +393,10 @@ SwitcherMode run_switcher_window ( char **input, G_GNUC_UNUSED void *data )
             desktops = 1;
         }
         if ( config_i3_mode ) {
-            sprintf ( pattern, "%%-%ds   %%s", MAX ( 5, classfield ) );
+            sprintf ( pattern, "%%-%ds   %%s %%s", MAX ( 5, classfield ) );
         }
         else{
-            sprintf ( pattern, "%%-%ds  %%-%ds   %%s", desktops < 10 ? 1 : 2, MAX ( 5, classfield ) );
+            sprintf ( pattern, "%%-%ds  %%-%ds   %%s    %%s", desktops < 10 ? 1 : 2, MAX ( 5, classfield ) );
         }
         char         **list = g_malloc0_n ( ( ids->len + 1 ), sizeof ( char* ) );
         unsigned int lines  = 0;
@@ -420,10 +423,10 @@ SwitcherMode run_switcher_window ( char **input, G_GNUC_UNUSED void *data )
                         sprintf ( desktop, "%d", (int) wmdesktop + 1 );
                     }
 
-                    sprintf ( line, pattern, desktop, c->class, c->title );
+                    sprintf ( line, pattern, desktop, c->class, c->title, c->urgent ? "[URGENT]" : "" );
                 }
                 else{
-                    sprintf ( line, pattern, c->class, c->title );
+                    sprintf ( line, pattern, c->class, c->title, c->urgent ? "[URGENT]" : "" );
                 }
 
                 list[lines++] = line;

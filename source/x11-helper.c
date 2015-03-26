@@ -444,3 +444,18 @@ unsigned int color_get ( Display *display, const char *const name )
         return XAllocNamedColor ( display, map, name, &color, &color ) ? color.pixel : None;
     }
 }
+
+int is_window_urgent ( Display *display, Window w )
+{
+    XWMHints *wmhints = XGetWMHints ( display, w );
+    int is_urgent = 0;
+
+    if ( wmhints != NULL && wmhints->flags & XUrgencyHint ) {
+        is_urgent = 1;
+    }
+
+    if ( wmhints )
+	XFree ( wmhints );
+
+    return is_urgent;
+}

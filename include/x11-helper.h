@@ -132,4 +132,12 @@ void create_visual_and_colormap ( Display *display );
  * Allocate a pixel value for an X named color
  */
 unsigned int color_get ( Display *display, const char *const name );
+
+/**
+ * @param display Connection to the X server.
+ * @param w       The window to check if the urgency hint is set.
+ *
+ * Return 1 if the urgency hint is set, 0 if not.
+ */
+int is_window_urgent(Display *display, Window w);
 #endif
